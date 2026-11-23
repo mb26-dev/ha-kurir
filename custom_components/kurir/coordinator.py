@@ -114,6 +114,10 @@ class KurirCoordinator(DataUpdateCoordinator[dict[str, dict[str, Any]]]):
         """Load parcels from storage."""
         stored = await self._store.async_load() or {}
         self.parcels = stored.get("parcels", {})
+        for parcel in self.parcels.values():
+            track = parcel.get("track")
+            if track:
+                parcel["track"] = TrackResult.from_dict(track).as_dict()
         self.etrackings_usage = stored.get("etrackings_usage", {"month": "", "count": 0})
 
     async def _async_save(self) -> None:
@@ -215,12 +219,32 @@ class KurirCoordinator(DataUpdateCoordinator[dict[str, dict[str, Any]]]):
         """
         self._etrackings_period()
         self.etrackings_usage["count"] = max(0, int(used))
+        self.etrackings_usage.pop("day", None)
         await self._async_save()
         self.async_update_listeners()
 
+    def _etrackings_day_quota(self) -> int:
+        """Requests allowed today: what is left of the limit, spread over the days left.
+
+        Without this, a few Flash parcels blocked for a day would use up a free
+        plan within a day or two. The quota for a day is fixed at its first use.
+        """
+        today = dt_util.now().date()
+        usage = self.etrackings_usage
+        if usage.get("day") != today.isoformat():
+            end = date.fromisoformat(self.etrackings_period_end)
+            days_left = max(1, (end - today).days)
+            left = max(0, self.etrackings_limit - int(usage.get("count", 0)))
+            usage["day"] = today.isoformat()
+            usage["day_count"] = 0
+            usage["day_quota"] = -(-left // days_left)  # ceil
+        return int(usage.get("day_quota", 0))
+
     def _etrackings_allowed(self) -> bool:
         self._etrackings_period()
-        return self.etrackings_key is not None and self.etrackings_usage["count"] < self.etrackings_limit
+        if self.etrackings_key is None or self.etrackings_usage["count"] >= self.etrackings_limit:
+            return False
+        return int(self.etrackings_usage.get("day_count", 0)) < self._etrackings_day_quota()
 
     async def _query_etrackings(self, session: Any, tn: str, carrier: str) -> TrackResult | None:
         parcel = self.parcels[tn]
@@ -235,6 +259,7 @@ class KurirCoordinator(DataUpdateCoordinator[dict[str, dict[str, Any]]]):
         key, secret = self.etrackings_key  # type: ignore[misc]
         parcel["etrackings_last"] = dt_util.utcnow().isoformat()
         self.etrackings_usage["count"] += 1
+        self.etrackings_usage["day_count"] = int(self.etrackings_usage.get("day_count", 0)) + 1
         return await fetch_etrackings(session, key, secret, courier_key, tn, carrier)
 
     def _cleanup_delivered(self) -> list[str]:
@@ -278,7 +303,7 @@ class KurirCoordinator(DataUpdateCoordinator[dict[str, dict[str, Any]]]):
             except CourierBlocked:
                 self.flash_blocked = True
                 _LOGGER.debug("Flash Express answered with its browser check; trying eTrackings if configured")
-                for tn in batch:
+                for tn in sorted(batch, key=lambda n: self.parcels[n].get("etrackings_last") or ""):
                     try:
                         res = await self._query_etrackings(session, tn, CARRIER_FLASH)
                     except CourierError as err:
