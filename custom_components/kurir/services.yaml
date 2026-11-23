@@ -1,0 +1,42 @@
+add_parcel:
+  fields:
+    tracking_number:
+      required: true
+      example: "SPXTH06735947878B"
+      selector:
+        text:
+    name:
+      example: "Broadlink RM4C mini"
+      selector:
+        text:
+    carrier:
+      example: "spx"
+      selector:
+        select:
+          options:
+            - "flash"
+            - "spx"
+            - "jt"
+            - "kerry"
+            - "thaipost"
+            - "dhl"
+            - "ninjavan"
+            - "best"
+add_from_text:
+  fields:
+    text:
+      required: true
+      example: "Your parcel TH65019CZ7KV8H0 has been shipped"
+      selector:
+        text:
+          multiline: true
+    name:
+      selector:
+        text:
+remove_parcel:
+  fields:
+    tracking_number:
+      required: true
+      selector:
+        text:
+refresh:

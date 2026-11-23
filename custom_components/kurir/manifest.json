@@ -1,0 +1,14 @@
+{
+  "domain": "kurir",
+  "name": "Kurir",
+  "codeowners": ["@mb26-dev"],
+  "config_flow": true,
+  "dependencies": ["http", "frontend"],
+  "documentation": "https://github.com/mb26-dev/ha-kurir",
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/mb26-dev/ha-kurir/issues",
+  "requirements": [],
+  "single_config_entry": true,
+  "version": "0.1.0"
+}
