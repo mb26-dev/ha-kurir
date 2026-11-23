@@ -164,7 +164,7 @@ Kurir only sends the tracking numbers you add to the courier that carries them (
 
 ## Support
 
-Issues and feature requests: [GitHub issues](https://github.com/mb26-dev/ha-kurir/issues). Tested a courier in a country marked "not verified" ? Please open an issue with the result.
+Issues and feature requests: [GitHub issues](https://github.com/mb26-dev/ha-kurir/issues). Tested a courier in a country marked "not verified"? Please open an issue with the result.
 
 ## License
 
