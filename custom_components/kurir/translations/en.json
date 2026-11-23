@@ -1,0 +1,91 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Kurir parcel tracking",
+        "description": "Choose your country. Flash Express and Shopee Express (SPX) work without an account. An optional free eTrackings key adds J&T, Kerry, Thailand Post and others, and is used as a fallback when Flash Express blocks automated requests.",
+        "data": {
+          "country": "Country",
+          "etrackings_api_key": "eTrackings API key (optional)",
+          "etrackings_key_secret": "eTrackings key secret (optional)"
+        }
+      },
+      "reconfigure": {
+        "title": "Kurir parcel tracking",
+        "data": {
+          "country": "Country",
+          "etrackings_api_key": "eTrackings API key (optional)",
+          "etrackings_key_secret": "eTrackings key secret (optional)"
+        }
+      }
+    },
+    "error": {
+      "etrackings_incomplete": "Enter both the eTrackings API key and the key secret, or leave both empty."
+    },
+    "abort": {
+      "single_instance_allowed": "Kurir is already set up.",
+      "reconfigure_successful": "Kurir was reconfigured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Kurir options",
+        "data": {
+          "scan_interval": "Update interval",
+          "keep_delivered_days": "Keep delivered parcels for (days, 0 = keep until removed)",
+          "etrackings_monthly_limit": "Maximum eTrackings requests per month"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "parcels": {
+        "name": "Parcels on the way"
+      },
+      "parcel": {
+        "state": {
+          "pending": "Pending",
+          "packed": "Packed",
+          "in_transit": "In transit",
+          "out_for_delivery": "Out for delivery",
+          "failed_attempt": "Delivery attempt failed",
+          "delivered": "Delivered",
+          "returned": "Returned",
+          "unknown": "Unknown"
+        }
+      }
+    }
+  },
+  "services": {
+    "add_parcel": {
+      "name": "Add parcel",
+      "description": "Start tracking a parcel.",
+      "fields": {
+        "tracking_number": { "name": "Tracking number", "description": "The courier tracking number, e.g. SPXTH... or TH...." },
+        "name": { "name": "Name", "description": "What is in the parcel, shown on the card." },
+        "carrier": { "name": "Courier", "description": "Only needed when Kurir cannot tell the courier from the number." }
+      }
+    },
+    "add_from_text": {
+      "name": "Add parcels from text",
+      "description": "Find tracking numbers in any text (an e-mail, a push notification) and track them.",
+      "fields": {
+        "text": { "name": "Text", "description": "Text that contains one or more tracking numbers." },
+        "name": { "name": "Name", "description": "Name for the parcels found." }
+      }
+    },
+    "remove_parcel": {
+      "name": "Remove parcel",
+      "description": "Stop tracking a parcel.",
+      "fields": {
+        "tracking_number": { "name": "Tracking number", "description": "The tracking number to remove." }
+      }
+    },
+    "refresh": {
+      "name": "Refresh",
+      "description": "Query the couriers now."
+    }
+  }
+}
