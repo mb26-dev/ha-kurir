@@ -16,6 +16,7 @@ from homeassistant.util import dt as dt_util
 from .carriers import (
     CourierBlocked,
     CourierError,
+    CourierNotFound,
     TrackResult,
     detect_carrier,
     fetch_etrackings,
@@ -56,6 +57,8 @@ _LOGGER = logging.getLogger(__name__)
 
 # A parcel is sent to the paid eTrackings fallback at most this often.
 ETRACKINGS_MIN_GAP = timedelta(hours=6)
+# A parcel eTrackings did not know is not asked again before this.
+ETRACKINGS_NOT_FOUND_GAP = timedelta(hours=24)
 
 
 class KurirCoordinator(DataUpdateCoordinator[dict[str, dict[str, Any]]]):
@@ -251,6 +254,9 @@ class KurirCoordinator(DataUpdateCoordinator[dict[str, dict[str, Any]]]):
         last = _parse(parcel.get("etrackings_last") or "")
         if last and dt_util.utcnow() - last < ETRACKINGS_MIN_GAP:
             return None
+        not_found = _parse(parcel.get("etrackings_not_found") or "")
+        if not_found and dt_util.utcnow() - not_found < ETRACKINGS_NOT_FOUND_GAP:
+            return None
         if not self._etrackings_allowed():
             return None
         courier_key = ETRACKINGS_COURIERS.get(carrier)
@@ -260,7 +266,15 @@ class KurirCoordinator(DataUpdateCoordinator[dict[str, dict[str, Any]]]):
         parcel["etrackings_last"] = dt_util.utcnow().isoformat()
         self.etrackings_usage["count"] += 1
         self.etrackings_usage["day_count"] = int(self.etrackings_usage.get("day_count", 0)) + 1
-        return await fetch_etrackings(session, key, secret, courier_key, tn, carrier)
+        try:
+            result = await fetch_etrackings(session, key, secret, courier_key, tn, carrier)
+        except CourierNotFound:
+            # Not known yet: step back for a day so the daily allowance goes to parcels with data.
+            parcel["etrackings_not_found"] = dt_util.utcnow().isoformat()
+            _LOGGER.debug("eTrackings does not know %s yet; trying again in a day", tn)
+            return None
+        parcel.pop("etrackings_not_found", None)
+        return result
 
     def _cleanup_delivered(self) -> list[str]:
         """Drop parcels delivered longer ago than the keep period."""
@@ -303,7 +317,13 @@ class KurirCoordinator(DataUpdateCoordinator[dict[str, dict[str, Any]]]):
             except CourierBlocked:
                 self.flash_blocked = True
                 _LOGGER.debug("Flash Express answered with its browser check; trying eTrackings if configured")
-                for tn in sorted(batch, key=lambda n: self.parcels[n].get("etrackings_last") or ""):
+                for tn in sorted(
+                    batch,
+                    key=lambda n: (
+                        bool(self.parcels[n].get("etrackings_not_found")),
+                        self.parcels[n].get("etrackings_last") or "",
+                    ),
+                ):
                     try:
                         res = await self._query_etrackings(session, tn, CARRIER_FLASH)
                     except CourierError as err:
