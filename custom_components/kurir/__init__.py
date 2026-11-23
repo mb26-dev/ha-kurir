@@ -64,7 +64,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     """Register the card and the services."""
     card = Path(__file__).parent / "frontend" / "kurir-card.js"
     await hass.http.async_register_static_paths([StaticPathConfig(CARD_URL, str(card), True)])
-    add_extra_js_url(hass, f"{CARD_URL}?v=0.1.1")
+    add_extra_js_url(hass, f"{CARD_URL}?v=0.1.2")
 
     async def add_parcel(call: ServiceCall) -> ServiceResponse:
         coord = _coordinator(hass)

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from typing import Any
 
 from homeassistant.config_entries import ConfigEntry
@@ -24,6 +24,7 @@ from .carriers import (
     normalize_tracking_number,
     spx_country,
 )
+from .quota import quota_period_end, quota_period_start
 from .const import (
     CARRIER_FLASH,
     CARRIER_NAMES,
@@ -31,10 +32,12 @@ from .const import (
     CONF_COUNTRY,
     CONF_ETRACKINGS_KEY,
     CONF_ETRACKINGS_MONTHLY_LIMIT,
+    CONF_ETRACKINGS_RESET_DAY,
     CONF_ETRACKINGS_SECRET,
     CONF_KEEP_DELIVERED_DAYS,
     CONF_SCAN_INTERVAL,
     DEFAULT_ETRACKINGS_MONTHLY_LIMIT,
+    DEFAULT_ETRACKINGS_RESET_DAY,
     DEFAULT_KEEP_DELIVERED_DAYS,
     DEFAULT_SCAN_INTERVAL_MIN,
     DOMAIN,
@@ -96,6 +99,10 @@ class KurirCoordinator(DataUpdateCoordinator[dict[str, dict[str, Any]]]):
     @property
     def etrackings_limit(self) -> int:
         return int(self.config_entry.options.get(CONF_ETRACKINGS_MONTHLY_LIMIT, DEFAULT_ETRACKINGS_MONTHLY_LIMIT))
+
+    @property
+    def etrackings_reset_day(self) -> int:
+        return int(self.config_entry.options.get(CONF_ETRACKINGS_RESET_DAY, DEFAULT_ETRACKINGS_RESET_DAY))
 
     @property
     def keep_delivered_days(self) -> int:
@@ -173,10 +180,35 @@ class KurirCoordinator(DataUpdateCoordinator[dict[str, dict[str, Any]]]):
 
     # ----------------------------------------------------------------- polling
 
+    def _etrackings_period(self) -> None:
+        """Start a new usage count when the eTrackings quota period has renewed."""
+        today = dt_util.now().date()
+        start = quota_period_start(today, self.etrackings_reset_day)
+        key = start.isoformat()
+        stored = self.etrackings_usage.get("month") or ""
+        count = int(self.etrackings_usage.get("count", 0))
+        reset_day = self.etrackings_reset_day
+        if stored == key:
+            return
+        if len(stored) == 7 and stored == today.strftime("%Y-%m"):
+            # 0.1.x counted per calendar month: keep this month's count.
+            self.etrackings_usage = {"month": key, "count": count, "reset_day": reset_day}
+            return
+        if self.etrackings_usage.get("reset_day", DEFAULT_ETRACKINGS_RESET_DAY) != reset_day:
+            # The renewal day was changed in the options: same requests, new period boundaries.
+            self.etrackings_usage = {"month": key, "count": count, "reset_day": reset_day}
+            return
+        self.etrackings_usage = {"month": key, "count": 0, "reset_day": reset_day}
+
+    @property
+    def etrackings_period_end(self) -> str:
+        """Day the current eTrackings quota renews (ISO date)."""
+        self._etrackings_period()
+        start = date.fromisoformat(self.etrackings_usage["month"])
+        return quota_period_end(start, self.etrackings_reset_day).isoformat()
+
     def _etrackings_allowed(self) -> bool:
-        month = dt_util.now().strftime("%Y-%m")
-        if self.etrackings_usage.get("month") != month:
-            self.etrackings_usage = {"month": month, "count": 0}
+        self._etrackings_period()
         return self.etrackings_key is not None and self.etrackings_usage["count"] < self.etrackings_limit
 
     async def _query_etrackings(self, session: Any, tn: str, carrier: str) -> TrackResult | None:

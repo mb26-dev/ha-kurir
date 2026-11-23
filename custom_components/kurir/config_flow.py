@@ -24,11 +24,13 @@ from .const import (
     CONF_COUNTRY,
     CONF_ETRACKINGS_KEY,
     CONF_ETRACKINGS_MONTHLY_LIMIT,
+    CONF_ETRACKINGS_RESET_DAY,
     CONF_ETRACKINGS_SECRET,
     CONF_KEEP_DELIVERED_DAYS,
     CONF_SCAN_INTERVAL,
     COUNTRIES,
     DEFAULT_ETRACKINGS_MONTHLY_LIMIT,
+    DEFAULT_ETRACKINGS_RESET_DAY,
     DEFAULT_KEEP_DELIVERED_DAYS,
     DEFAULT_SCAN_INTERVAL_MIN,
     DOMAIN,
@@ -128,6 +130,7 @@ class KurirOptionsFlow(OptionsFlow):
                         CONF_SCAN_INTERVAL: int(user_input[CONF_SCAN_INTERVAL]),
                         CONF_KEEP_DELIVERED_DAYS: int(user_input[CONF_KEEP_DELIVERED_DAYS]),
                         CONF_ETRACKINGS_MONTHLY_LIMIT: int(user_input[CONF_ETRACKINGS_MONTHLY_LIMIT]),
+                        CONF_ETRACKINGS_RESET_DAY: int(user_input[CONF_ETRACKINGS_RESET_DAY]),
                     },
                 )
         opts = self.config_entry.options
@@ -152,6 +155,10 @@ class KurirOptionsFlow(OptionsFlow):
                     CONF_ETRACKINGS_MONTHLY_LIMIT,
                     default=opts.get(CONF_ETRACKINGS_MONTHLY_LIMIT, DEFAULT_ETRACKINGS_MONTHLY_LIMIT),
                 ): NumberSelector(NumberSelectorConfig(min=0, max=10000, step=1, mode=NumberSelectorMode.BOX)),
+                vol.Required(
+                    CONF_ETRACKINGS_RESET_DAY,
+                    default=opts.get(CONF_ETRACKINGS_RESET_DAY, DEFAULT_ETRACKINGS_RESET_DAY),
+                ): NumberSelector(NumberSelectorConfig(min=1, max=31, step=1, mode=NumberSelectorMode.BOX)),
             }
         )
         return self.async_show_form(step_id="init", data_schema=schema, errors=errors)
