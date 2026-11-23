@@ -125,6 +125,9 @@ THAI_PROVINCES: dict[str, str] = {
 
 _THAI_CHARS = re.compile(r"[฀-๿]")
 _PROVINCE_IN_ADDRESS = re.compile(r"จังหวัด\s*(\S+)")
+# Courier texts sometimes carry the driver's phone number; never keep it.
+_PERSONAL = re.compile(r"phone|tel\b|โทร|\d{6,}", re.IGNORECASE)
+_CLOCK_ONLY = re.compile(r"^\d{1,2}:\d{2}(:\d{2})?$")
 
 # Patterns used to recognise tracking numbers in free text.
 _TN_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
@@ -224,15 +227,15 @@ class TrackResult:
     def from_dict(cls, data: dict[str, Any]) -> TrackResult:
         """Rebuild from storage."""
         events = [
-            TrackEvent(time=e.get("time", ""), event=e.get("event", ""), location=e.get("location", ""))
+            TrackEvent(time=e.get("time", ""), event=scrub_event(e.get("event", "")), location=scrub_location(e.get("location", "")))
             for e in data.get("events", [])
         ]
         return cls(
             tracking_number=data["tracking_number"],
             carrier=data.get("carrier", ""),
             status=data.get("status", STATUS_PENDING),
-            event=data.get("event", ""),
-            location=data.get("location", ""),
+            event=scrub_event(data.get("event", "")),
+            location=scrub_location(data.get("location", "")),
             time=data.get("time", ""),
             delivered_at=data.get("delivered_at", ""),
             source=data.get("source", ""),
@@ -243,6 +246,16 @@ class TrackResult:
 # --------------------------------------------------------------------------
 # Tracking number helpers
 # --------------------------------------------------------------------------
+
+
+def scrub_location(text: str) -> str:
+    """Drop places that carry personal data (a driver's phone number)."""
+    return "" if text and _PERSONAL.search(text) else (text or "")
+
+
+def scrub_event(text: str) -> str:
+    """An event that is only a clock time (older eTrackings parsing) becomes 'In transit'."""
+    return "In transit" if text and _CLOCK_ONLY.match(text.strip()) else (text or "")
 
 
 def normalize_tracking_number(value: str) -> str:
@@ -516,8 +529,18 @@ def parse_etrackings(tracking_number: str, carrier: str, payload: dict[str, Any]
         elif st == "ON_PICKED_UP":
             name = "Picked up by courier"
         else:
-            name = desc.split(" - ")[0].strip() or "In transit"
+            low = desc.lower()
+            first = desc.split(" - ")[0].split(",")[0].strip()
+            if "in transit from" in low or "departed" in low or "left the" in low:
+                name = "Departed hub"
+            elif "arriv" in low:
+                name = "Arrived at hub"
+            elif first and not _CLOCK_ONLY.match(first) and not _PERSONAL.search(first) and not _THAI_CHARS.search(first):
+                name = first
+            else:
+                name = "In transit"
         segs = [s.strip() for s in desc.split(" - Shipping by")[0].split(",")]
+        segs = [s for s in segs if s and not _PERSONAL.search(s)]
         place = _thai_place(segs[-1]) if len(segs) > 1 else ""
         if not place and len(segs) > 1 and not _THAI_CHARS.search(segs[-1]):
             place = segs[-1]
