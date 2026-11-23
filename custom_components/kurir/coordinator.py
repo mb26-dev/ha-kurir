@@ -207,6 +207,17 @@ class KurirCoordinator(DataUpdateCoordinator[dict[str, dict[str, Any]]]):
         start = date.fromisoformat(self.etrackings_usage["month"])
         return quota_period_end(start, self.etrackings_reset_day).isoformat()
 
+    async def async_set_etrackings_usage(self, used: int) -> None:
+        """Set the requests already used in the current quota period.
+
+        For requests Kurir did not make itself (the same key used elsewhere).
+        The number is replaced by 0 automatically when the quota renews.
+        """
+        self._etrackings_period()
+        self.etrackings_usage["count"] = max(0, int(used))
+        await self._async_save()
+        self.async_update_listeners()
+
     def _etrackings_allowed(self) -> bool:
         self._etrackings_period()
         return self.etrackings_key is not None and self.etrackings_usage["count"] < self.etrackings_limit

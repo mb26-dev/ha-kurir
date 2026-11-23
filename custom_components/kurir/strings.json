@@ -115,6 +115,16 @@
     "refresh": {
       "name": "Refresh",
       "description": "Query the couriers now."
+    },
+    "set_etrackings_usage": {
+      "name": "Set eTrackings usage",
+      "description": "Set how many eTrackings requests are already used in the current quota period, e.g. by another tool with the same key. The number is reset automatically when the quota renews.",
+      "fields": {
+        "used": {
+          "name": "Requests used",
+          "description": "Requests used so far in this quota period, as shown on etrackings.com."
+        }
+      }
     }
   }
 }

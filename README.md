@@ -67,7 +67,7 @@ Options (⚙️ on the integration):
 | Maximum eTrackings requests per quota period | 45 | Kurir stops using eTrackings at this number. |
 | Day of the month your eTrackings quota renews | 1 | eTrackings renews the quota on the day your account was created, not on the 1st – the date is shown on etrackings.com next to your usage. Set it here so Kurir's count restarts on the same day. |
 
-> **Using the same eTrackings key somewhere else?** Kurir only counts its own requests. Lower the limit by what the other tool uses, or give Kurir a key of its own.
+> **Using the same eTrackings key somewhere else?** Kurir only counts its own requests. Tell Kurir what is already used with `kurir.set_etrackings_usage` (see below) – the number is reset automatically when the quota renews – or give Kurir a key of its own.
 
 ## Usage
 
@@ -101,6 +101,16 @@ data:
 
 ```yaml
 action: kurir.refresh
+```
+
+### Correct the eTrackings count
+
+Kurir counts only its own eTrackings requests. If the same key was used elsewhere in this quota period, set the number shown on etrackings.com. It goes back to 0 by itself when the quota renews.
+
+```yaml
+action: kurir.set_etrackings_usage
+data:
+  used: 27
 ```
 
 ## Entities
