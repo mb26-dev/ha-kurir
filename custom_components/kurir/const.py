@@ -13,11 +13,13 @@ CONF_ETRACKINGS_SECRET: Final = "etrackings_key_secret"
 CONF_SCAN_INTERVAL: Final = "scan_interval"
 CONF_KEEP_DELIVERED_DAYS: Final = "keep_delivered_days"
 CONF_ETRACKINGS_MONTHLY_LIMIT: Final = "etrackings_monthly_limit"
+CONF_ETRACKINGS_RESET_DAY: Final = "etrackings_reset_day"
 
 DEFAULT_SCAN_INTERVAL_MIN: Final = 60
 MIN_SCAN_INTERVAL_MIN: Final = 30
 DEFAULT_KEEP_DELIVERED_DAYS: Final = 3
 DEFAULT_ETRACKINGS_MONTHLY_LIMIT: Final = 45
+DEFAULT_ETRACKINGS_RESET_DAY: Final = 1
 
 # Country code -> public SPX (Shopee Express) tracking host.
 # All of them run the same tracking platform; Thailand, Malaysia, Vietnam,
