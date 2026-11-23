@@ -108,6 +108,9 @@ class KurirSummarySensor(CoordinatorEntity[KurirCoordinator], SensorEntity):
             "etrackings_used_this_month": usage.get("count", 0) if self.coordinator.etrackings_key else None,
             "etrackings_limit": self.coordinator.etrackings_limit if self.coordinator.etrackings_key else None,
             "etrackings_quota_renews": self.coordinator.etrackings_period_end if self.coordinator.etrackings_key else None,
+            "etrackings_today": (
+                f"{usage.get('day_count', 0)}/{usage.get('day_quota', 0)}" if self.coordinator.etrackings_key else None
+            ),
             "last_errors": self.coordinator.last_errors[:5],
         }
 

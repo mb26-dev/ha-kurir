@@ -82,6 +82,9 @@ ETR = {
         {"date": "2026-11-22", "details": [
             {"dateTime": "2026-11-22T18:38:00+07:00", "status": "ON_DELIVERED", "description": "Delivery failed - Problematic parcel, Ao Nang, Krabi - Shipping by Flash"},
             {"dateTime": "2026-11-22T12:06:00+07:00", "status": "ON_SHIPPING", "description": "Out for delivery, Krabi - Shipping by Flash"},
+            {"dateTime": "2026-11-20T08:33:00+07:00", "status": "ON_OTHER_STATUS", "description": "08:33, Krabi - Shipping by Flash"},
+            {"dateTime": "2026-11-19T21:01:00+07:00", "status": "ON_OTHER_STATUS", "description": "Parcel in transit from Surat Thani, Surat Thani - Shipping by Flash"},
+            {"dateTime": "2026-11-18T21:54:00+07:00", "status": "ON_PICKED_UP", "description": "Picked up, Delivery staff phone number 0958721459 - Shipping by Flash"},
         ]}
     ]},
 }
@@ -153,6 +156,19 @@ class TestEtrackings(unittest.TestCase):
         self.assertEqual(r.events[0].event, "Delivery attempt failed")
         self.assertEqual(r.events[1].event, "Out for delivery")
         self.assertEqual(r.events[1].location, "Krabi")
+        self.assertEqual(r.events[2].event, "In transit")
+        self.assertEqual(r.events[3].event, "Departed hub")
+        self.assertEqual(r.events[4].event, "Picked up by courier")
+        self.assertEqual(r.events[4].location, "")
+
+    def test_scrub_stored(self):
+        stored = {"tracking_number": "TH1", "event": "18:03", "location": "Delivery staff phone number 0645980037",
+                  "events": [{"time": "", "event": "09:20", "location": "Delivery staff phone number 0958721459"}]}
+        r = carriers.TrackResult.from_dict(stored)
+        self.assertEqual(r.event, "In transit")
+        self.assertEqual(r.location, "")
+        self.assertEqual(r.events[0].event, "In transit")
+        self.assertEqual(r.events[0].location, "")
 
 
 class TestRoundTrip(unittest.TestCase):
