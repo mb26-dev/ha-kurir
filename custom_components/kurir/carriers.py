@@ -189,6 +189,10 @@ class CourierError(Exception):
     """The courier request failed."""
 
 
+class CourierNotFound(CourierError):
+    """The courier (or eTrackings) does not know this tracking number (yet)."""
+
+
 @dataclass
 class TrackEvent:
     """One scan event of a parcel."""
@@ -573,6 +577,8 @@ async def fetch_etrackings(
         async with session.post(ETRACKINGS_URL, json=body, headers=headers, timeout=REQUEST_TIMEOUT) as resp:
             if resp.status in (401, 403):
                 raise CourierError("eTrackings rejected the API key")
+            if resp.status == 404:
+                raise CourierNotFound(f"eTrackings does not know {tracking_number} yet")
             if resp.status == 429:
                 raise CourierError("eTrackings quota exhausted")
             if resp.status != 200:
