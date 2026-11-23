@@ -40,3 +40,13 @@ remove_parcel:
       selector:
         text:
 refresh:
+set_etrackings_usage:
+  fields:
+    used:
+      required: true
+      example: 27
+      selector:
+        number:
+          min: 0
+          max: 10000
+          mode: box

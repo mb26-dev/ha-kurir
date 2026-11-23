@@ -21,12 +21,14 @@ from .const import (
     ATTR_NAME,
     ATTR_TEXT,
     ATTR_TRACKING_NUMBER,
+    ATTR_USED,
     CARD_URL,
     DOMAIN,
     SERVICE_ADD_FROM_TEXT,
     SERVICE_ADD_PARCEL,
     SERVICE_REFRESH,
     SERVICE_REMOVE_PARCEL,
+    SERVICE_SET_ETRACKINGS_USAGE,
 )
 from .coordinator import KurirCoordinator
 
@@ -51,6 +53,7 @@ ADD_TEXT_SCHEMA = vol.Schema(
     }
 )
 REMOVE_SCHEMA = vol.Schema({vol.Required(ATTR_TRACKING_NUMBER): cv.string})
+USAGE_SCHEMA = vol.Schema({vol.Required(ATTR_USED): vol.All(vol.Coerce(int), vol.Range(min=0, max=100000))})
 
 
 def _coordinator(hass: HomeAssistant) -> KurirCoordinator:
@@ -64,7 +67,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     """Register the card and the services."""
     card = Path(__file__).parent / "frontend" / "kurir-card.js"
     await hass.http.async_register_static_paths([StaticPathConfig(CARD_URL, str(card), True)])
-    add_extra_js_url(hass, f"{CARD_URL}?v=0.1.2")
+    add_extra_js_url(hass, f"{CARD_URL}?v=0.1.3")
 
     async def add_parcel(call: ServiceCall) -> ServiceResponse:
         coord = _coordinator(hass)
@@ -93,6 +96,9 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     async def refresh(call: ServiceCall) -> None:
         await _coordinator(hass).async_refresh()
 
+    async def set_etrackings_usage(call: ServiceCall) -> None:
+        await _coordinator(hass).async_set_etrackings_usage(call.data[ATTR_USED])
+
     hass.services.async_register(
         DOMAIN, SERVICE_ADD_PARCEL, add_parcel, schema=ADD_SCHEMA, supports_response=SupportsResponse.OPTIONAL
     )
@@ -103,6 +109,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
         DOMAIN, SERVICE_REMOVE_PARCEL, remove_parcel, schema=REMOVE_SCHEMA, supports_response=SupportsResponse.OPTIONAL
     )
     hass.services.async_register(DOMAIN, SERVICE_REFRESH, refresh)
+    hass.services.async_register(DOMAIN, SERVICE_SET_ETRACKINGS_USAGE, set_etrackings_usage, schema=USAGE_SCHEMA)
     return True
 
 

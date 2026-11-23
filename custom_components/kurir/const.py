@@ -110,11 +110,13 @@ SERVICE_ADD_PARCEL: Final = "add_parcel"
 SERVICE_ADD_FROM_TEXT: Final = "add_from_text"
 SERVICE_REMOVE_PARCEL: Final = "remove_parcel"
 SERVICE_REFRESH: Final = "refresh"
+SERVICE_SET_ETRACKINGS_USAGE: Final = "set_etrackings_usage"
 
 ATTR_TRACKING_NUMBER: Final = "tracking_number"
 ATTR_NAME: Final = "name"
 ATTR_CARRIER: Final = "carrier"
 ATTR_TEXT: Final = "text"
+ATTR_USED: Final = "used"
 
 STORAGE_VERSION: Final = 1
 MAX_EVENTS_STORED: Final = 20
