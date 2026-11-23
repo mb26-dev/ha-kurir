@@ -84,8 +84,13 @@ class KurirCoordinator(DataUpdateCoordinator[dict[str, dict[str, Any]]]):
 
     @property
     def etrackings_key(self) -> tuple[str, str] | None:
-        key = self.config_entry.data.get(CONF_ETRACKINGS_KEY) or ""
-        secret = self.config_entry.data.get(CONF_ETRACKINGS_SECRET) or ""
+        opts, data = self.config_entry.options, self.config_entry.data
+        if CONF_ETRACKINGS_KEY in opts:
+            key = opts.get(CONF_ETRACKINGS_KEY) or ""
+            secret = opts.get(CONF_ETRACKINGS_SECRET) or ""
+        else:
+            key = data.get(CONF_ETRACKINGS_KEY) or ""
+            secret = data.get(CONF_ETRACKINGS_SECRET) or ""
         return (key, secret) if key and secret else None
 
     @property
