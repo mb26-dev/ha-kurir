@@ -10,6 +10,7 @@ Flash Express · Shopee Express (SPX) · more couriers through eTrackings</p>
   <a href="https://github.com/hacs/integration"><img src="https://img.shields.io/badge/HACS-Custom-41BDF5.svg" alt="HACS Custom"></a>
   <img src="https://img.shields.io/badge/Home%20Assistant-2025.4%2B-03a9f4" alt="Home Assistant 2025.4+">
   <img src="https://img.shields.io/github/v/release/mb26-dev/ha-kurir?include_prereleases" alt="Release">
+  <a href="https://ko-fi.com/mb26dev"><img src="https://img.shields.io/badge/Ko--fi-Buy%20me%20a%20coffee-FF5E5B?logo=ko-fi&logoColor=white" alt="Buy me a coffee on Ko-fi"></a>
 </p>
 
 Shopping on Lazada or Shopee means your parcel travels with Flash Express, Shopee Express or another local courier, and the only way to see where it is has been to open the shop app. **Kurir** brings the live courier scans into Home Assistant: every hub, every departure, *out for delivery* and – most important – **a failed delivery attempt**, so you know before the parcel goes back.
@@ -173,6 +174,12 @@ max_items: 20
 Kurir only sends the tracking numbers you add to the courier that carries them (or to eTrackings if you configured a key). From the answers it keeps the scan event, place and time. Names, phone numbers and addresses that couriers include in their answers are not stored.
 
 ## Support
+
+If Kurir told you about a failed delivery attempt before the parcel went back, a coffee keeps the project moving. ☕📦
+
+<a href="https://ko-fi.com/mb26dev"><img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="Support me on Ko-fi"></a>
+
+A star on GitHub or a bug report helps just as much. Thank you!
 
 Issues and feature requests: [GitHub issues](https://github.com/mb26-dev/ha-kurir/issues). Tested a courier in a country marked "not verified"? Please open an issue with the result.
 
