@@ -111,16 +111,35 @@ class KurirConfigFlow(ConfigFlow, domain=DOMAIN):
 
 
 class KurirOptionsFlow(OptionsFlow):
-    """Polling interval, keep period and eTrackings budget."""
+    """eTrackings key, polling interval, keep period and eTrackings budget."""
 
     async def async_step_init(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+        errors: dict[str, str] = {}
         if user_input is not None:
-            return self.async_create_entry(
-                data={k: int(v) for k, v in user_input.items()},
-            )
+            key = (user_input.get(CONF_ETRACKINGS_KEY) or "").strip()
+            secret = (user_input.get(CONF_ETRACKINGS_SECRET) or "").strip()
+            if bool(key) != bool(secret):
+                errors["base"] = "etrackings_incomplete"
+            else:
+                return self.async_create_entry(
+                    data={
+                        CONF_ETRACKINGS_KEY: key,
+                        CONF_ETRACKINGS_SECRET: secret,
+                        CONF_SCAN_INTERVAL: int(user_input[CONF_SCAN_INTERVAL]),
+                        CONF_KEEP_DELIVERED_DAYS: int(user_input[CONF_KEEP_DELIVERED_DAYS]),
+                        CONF_ETRACKINGS_MONTHLY_LIMIT: int(user_input[CONF_ETRACKINGS_MONTHLY_LIMIT]),
+                    },
+                )
         opts = self.config_entry.options
+        data = self.config_entry.data
         schema = vol.Schema(
             {
+                vol.Optional(
+                    CONF_ETRACKINGS_KEY, default=opts.get(CONF_ETRACKINGS_KEY, data.get(CONF_ETRACKINGS_KEY, ""))
+                ): SECRET,
+                vol.Optional(
+                    CONF_ETRACKINGS_SECRET, default=opts.get(CONF_ETRACKINGS_SECRET, data.get(CONF_ETRACKINGS_SECRET, ""))
+                ): SECRET,
                 vol.Required(
                     CONF_SCAN_INTERVAL, default=opts.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL_MIN)
                 ): NumberSelector(
@@ -135,4 +154,4 @@ class KurirOptionsFlow(OptionsFlow):
                 ): NumberSelector(NumberSelectorConfig(min=0, max=10000, step=1, mode=NumberSelectorMode.BOX)),
             }
         )
-        return self.async_show_form(step_id="init", data_schema=schema)
+        return self.async_show_form(step_id="init", data_schema=schema, errors=errors)

@@ -32,11 +32,17 @@
       "init": {
         "title": "Kurir options",
         "data": {
+          "etrackings_api_key": "eTrackings API key (optional)",
+          "etrackings_key_secret": "eTrackings key secret (optional)",
           "scan_interval": "Update interval",
           "keep_delivered_days": "Keep delivered parcels for (days, 0 = keep until removed)",
           "etrackings_monthly_limit": "Maximum eTrackings requests per month"
-        }
+        },
+        "description": "Optional free eTrackings key (etrackings.com → Settings → API Keys): adds J&T, Kerry, Thailand Post and others, and is the fallback when Flash Express blocks automated requests."
       }
+    },
+    "error": {
+      "etrackings_incomplete": "Enter both the eTrackings API key and the key secret, or leave both empty."
     }
   },
   "entity": {
@@ -63,24 +69,42 @@
       "name": "Add parcel",
       "description": "Start tracking a parcel.",
       "fields": {
-        "tracking_number": { "name": "Tracking number", "description": "The courier tracking number, e.g. SPXTH... or TH...." },
-        "name": { "name": "Name", "description": "What is in the parcel, shown on the card." },
-        "carrier": { "name": "Courier", "description": "Only needed when Kurir cannot tell the courier from the number." }
+        "tracking_number": {
+          "name": "Tracking number",
+          "description": "The courier tracking number, e.g. SPXTH... or TH...."
+        },
+        "name": {
+          "name": "Name",
+          "description": "What is in the parcel, shown on the card."
+        },
+        "carrier": {
+          "name": "Courier",
+          "description": "Only needed when Kurir cannot tell the courier from the number."
+        }
       }
     },
     "add_from_text": {
       "name": "Add parcels from text",
       "description": "Find tracking numbers in any text (an e-mail, a push notification) and track them.",
       "fields": {
-        "text": { "name": "Text", "description": "Text that contains one or more tracking numbers." },
-        "name": { "name": "Name", "description": "Name for the parcels found." }
+        "text": {
+          "name": "Text",
+          "description": "Text that contains one or more tracking numbers."
+        },
+        "name": {
+          "name": "Name",
+          "description": "Name for the parcels found."
+        }
       }
     },
     "remove_parcel": {
       "name": "Remove parcel",
       "description": "Stop tracking a parcel.",
       "fields": {
-        "tracking_number": { "name": "Tracking number", "description": "The tracking number to remove." }
+        "tracking_number": {
+          "name": "Tracking number",
+          "description": "The tracking number to remove."
+        }
       }
     },
     "refresh": {
