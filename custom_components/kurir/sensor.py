@@ -106,6 +106,8 @@ class KurirSummarySensor(CoordinatorEntity[KurirCoordinator], SensorEntity):
             "counts": counts,
             "flash_blocked": self.coordinator.flash_blocked,
             "etrackings_used_this_month": usage.get("count", 0) if self.coordinator.etrackings_key else None,
+            "etrackings_limit": self.coordinator.etrackings_limit if self.coordinator.etrackings_key else None,
+            "etrackings_quota_renews": self.coordinator.etrackings_period_end if self.coordinator.etrackings_key else None,
             "last_errors": self.coordinator.last_errors[:5],
         }
 

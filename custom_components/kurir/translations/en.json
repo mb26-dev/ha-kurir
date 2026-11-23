@@ -36,7 +36,12 @@
           "etrackings_key_secret": "eTrackings key secret (optional)",
           "scan_interval": "Update interval",
           "keep_delivered_days": "Keep delivered parcels for (days, 0 = keep until removed)",
-          "etrackings_monthly_limit": "Maximum eTrackings requests per month"
+          "etrackings_monthly_limit": "Maximum eTrackings requests per quota period",
+          "etrackings_reset_day": "Day of the month your eTrackings quota renews"
+        },
+        "data_description": {
+          "etrackings_monthly_limit": "Kurir stops using eTrackings at this number. Keep it a little below your plan (free plan: 50) if you use the key elsewhere too.",
+          "etrackings_reset_day": "eTrackings renews the quota on the day your account was created, not on the 1st. The renewal date is shown on etrackings.com next to your usage."
         },
         "description": "Optional free eTrackings key (etrackings.com → Settings → API Keys): adds J&T, Kerry, Thailand Post and others, and is the fallback when Flash Express blocks automated requests."
       }

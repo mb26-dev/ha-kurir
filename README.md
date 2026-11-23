@@ -21,7 +21,7 @@ Shopping on Lazada or Shopee means your parcel travels with Flash Express, Shope
 - **Events for automations** – `kurir_parcel_update` fires on every new scan, with status, event, place and time. Build your own phone notifications from it.
 - **Add parcels from any text** – `kurir.add_from_text` finds tracking numbers in an e-mail body or a push notification and starts tracking them.
 - **No account needed** for Flash Express and Shopee Express. They are queried through their public tracking pages, at most once per update interval (default: hourly).
-- **Optional eTrackings key** (free plan: 50 requests/month) adds J&T, Kerry, Thailand Post, DHL eCommerce, Ninja Van, Best Express and is used as a fallback when Flash Express blocks automated requests. Kurir keeps a monthly budget so the free plan is never exceeded.
+- **Optional eTrackings key** (free plan: 50 requests/month) adds J&T, Kerry, Thailand Post, DHL eCommerce, Ninja Van, Best Express and is used as a fallback when Flash Express blocks automated requests. Kurir keeps a budget per quota period so the free plan is never exceeded.
 - **Lovelace card included** – `custom:kurir-card`, phone friendly, follows your theme.
 - Delivered parcels are removed automatically after a few days (configurable).
 
@@ -57,7 +57,17 @@ Copy `custom_components/kurir` into your `config/custom_components/` folder and 
 | Country | Your country. Used for SPX numbers without a country code and for Flash Express. |
 | eTrackings API key / key secret | Optional. Free account at [etrackings.com](https://etrackings.com) → Settings → API Keys. |
 
-Options (⚙️ on the integration): update interval (min. 30 min, default 60), days to keep delivered parcels (default 3, `0` keeps them until removed), maximum eTrackings requests per month (default 45).
+Options (⚙️ on the integration):
+
+| Option | Default | Description |
+|---|---|---|
+| eTrackings API key / key secret | – | Can be added or changed here at any time. |
+| Update interval | 60 min | Minimum 30 min. |
+| Keep delivered parcels | 3 days | `0` keeps them until you remove them. |
+| Maximum eTrackings requests per quota period | 45 | Kurir stops using eTrackings at this number. |
+| Day of the month your eTrackings quota renews | 1 | eTrackings renews the quota on the day your account was created, not on the 1st – the date is shown on etrackings.com next to your usage. Set it here so Kurir's count restarts on the same day. |
+
+> **Using the same eTrackings key somewhere else?** Kurir only counts its own requests. Lower the limit by what the other tool uses, or give Kurir a key of its own.
 
 ## Usage
 
@@ -95,7 +105,7 @@ action: kurir.refresh
 
 ## Entities
 
-- **`sensor.kurir_parcels_on_the_way`** – number of parcels not yet delivered. Attributes: `parcels` (list used by the card), `counts` per status, `flash_blocked`, `etrackings_used_this_month`.
+- **`sensor.kurir_parcels_on_the_way`** – number of parcels not yet delivered. Attributes: `parcels` (list used by the card), `counts` per status, `flash_blocked`, `etrackings_used_this_month` (requests in the current quota period), `etrackings_limit`, `etrackings_quota_renews`.
 - **One sensor per parcel** – state is one of `pending`, `packed`, `in_transit`, `out_for_delivery`, `failed_attempt`, `delivered`, `returned`, `unknown`. Attributes: `tracking_number`, `carrier`, `event`, `location`, `event_time`, `step`, `delivered_at`, `events`.
 
 ## Event `kurir_parcel_update`
@@ -154,7 +164,7 @@ Kurir only sends the tracking numbers you add to the courier that carries them (
 
 ## Support
 
-Issues and feature requests: [GitHub issues](https://github.com/mb26-dev/ha-kurir/issues). Tested a courier in a country marked "not verified"? Please open an issue with the result.
+Issues and feature requests: [GitHub issues](https://github.com/mb26-dev/ha-kurir/issues). Tested a courier in a country marked "not verified" ? Please open an issue with the result.
 
 ## License
 
