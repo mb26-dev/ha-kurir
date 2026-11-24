@@ -26,6 +26,33 @@ Shopping on Lazada or Shopee means your parcel travels with Flash Express, Shope
 - **Lovelace card included** – `custom:kurir-card`, phone friendly, follows your theme.
 - Delivered parcels are removed automatically after a few days (configurable).
 
+## Screenshots
+
+<table>
+  <tr>
+    <td align="center" valign="top" width="50%">
+      <img src="images/card.png" alt="Kurir card with several parcels" width="100%"><br>
+      <sub><b>Kurir card</b> – every parcel with courier, last scan, place and progress. A failed delivery attempt is shown in red.</sub>
+    </td>
+    <td align="center" valign="top" width="50%">
+      <img src="images/card-history.png" alt="Scan history of one parcel" width="100%"><br>
+      <sub><b>Scan history</b> – tap a parcel to see every hub, departure and arrival.</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" valign="top" width="50%">
+      <img src="images/options.png" alt="Kurir options dialog" width="100%"><br>
+      <sub><b>Options</b> – update interval, eTrackings key, monthly limit and the day the quota renews.</sub>
+    </td>
+    <td align="center" valign="top" width="50%">
+      <img src="images/integration.png" alt="Kurir on the integrations page" width="100%"><br>
+      <sub><b>Integration</b> – one device with a sensor per parcel plus the summary sensors.</sub>
+    </td>
+  </tr>
+</table>
+
+<sub>The screenshots use demo parcels; tracking numbers and places are made up.</sub>
+
 ## Couriers and countries
 
 | Courier | Countries | How | Status |
