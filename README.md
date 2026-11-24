@@ -7,7 +7,7 @@
 Flash Express · Shopee Express (SPX) · more couriers through eTrackings</p>
 
 <p align="center">
-  <a href="https://github.com/hacs/integration"><img src="https://img.shields.io/badge/HACS-Custom-41BDF5.svg" alt="HACS Custom"></a>
+  <a href="https://github.com/hacs/integration"><img src="https://img.shields.io/badge/HACS-Default-41BDF5.svg" alt="HACS Default"></a>
   <img src="https://img.shields.io/badge/Home%20Assistant-2025.4%2B-03a9f4" alt="Home Assistant 2025.4+">
   <img src="https://img.shields.io/github/v/release/mb26-dev/ha-kurir?include_prereleases" alt="Release">
   <a href="https://ko-fi.com/mb26dev"><img src="https://img.shields.io/badge/Ko--fi-Buy%20me%20a%20coffee-FF5E5B?logo=ko-fi&logoColor=white" alt="Buy me a coffee on Ko-fi"></a>
@@ -70,9 +70,21 @@ The courier is detected from the tracking number (`SPXTH…`, `SPXMY…`, `TH…
 
 ### HACS (recommended)
 
+Kurir is available in the HACS default store.
+
+[![Open your Home Assistant instance and open this repository in HACS.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=mb26-dev&repository=ha-kurir&category=integration)
+
+1. Open **HACS** in Home Assistant, search for **Kurir** and install it.
+2. Restart Home Assistant.
+3. **Settings → Devices & services → Add integration → Kurir**.
+
+<details>
+<summary>Not showing up in HACS yet? Add it as a custom repository</summary>
+
 1. HACS → ⋮ → **Custom repositories** → add `https://github.com/mb26-dev/ha-kurir`, type **Integration**.
 2. Install **Kurir** and restart Home Assistant.
-3. **Settings → Devices & services → Add integration → Kurir**.
+
+</details>
 
 ### Manual
 
