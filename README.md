@@ -18,6 +18,7 @@ Shopping on Lazada or Shopee means your parcel travels with Flash Express, Shope
 ## Features
 
 - **Live status per parcel** – last scan with place and time, a 4-step progress bar (Ordered → Packed → Shipped → Delivered) and the full scan history.
+- **Readable places** – Thai province names and the Chinese place names of cross-border parcels (e.g. `浙江,嘉兴市`) are shown in English (`Zhejiang, Jiaxing`); unknown Chinese places show as `China`.
 - **Failed delivery attempts** are a status of their own (`failed_attempt`) and are shown in red.
 - **Events for automations** – `kurir_parcel_update` fires on every new scan, with status, event, place and time. Build your own phone notifications from it.
 - **Add parcels from any text** – `kurir.add_from_text` finds tracking numbers in an e-mail body or a push notification and starts tracking them.

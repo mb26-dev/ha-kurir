@@ -171,6 +171,50 @@ class TestEtrackings(unittest.TestCase):
         self.assertEqual(r.events[0].location, "")
 
 
+class TestChinesePlaces(unittest.TestCase):
+    def test_province_and_city(self):
+        self.assertEqual(carriers.scrub_location("浙江,嘉兴市"), "Zhejiang, Jiaxing")
+        self.assertEqual(carriers.scrub_location("浙江,嘉兴市,秀洲区,高照"), "Zhejiang, Jiaxing")
+        self.assertEqual(carriers.scrub_location("广东省深圳市宝安区"), "Guangdong, Shenzhen")
+
+    def test_municipality_not_doubled(self):
+        self.assertEqual(carriers.scrub_location("上海市,上海市"), "Shanghai")
+
+    def test_unknown_place(self):
+        self.assertEqual(carriers.scrub_location("某某转运中心"), "China")
+
+    def test_mixed_text_keeps_latin(self):
+        self.assertEqual(carriers.scrub_location("DGHub 转运"), "DGHub")
+
+    def test_next_location_arrow(self):
+        self.assertEqual(carriers.scrub_location("→ 浙江,嘉兴市"), "→ Zhejiang, Jiaxing")
+
+    def test_latin_and_thai_unchanged(self):
+        self.assertEqual(carriers.scrub_location("Bangkok"), "Bangkok")
+        self.assertEqual(carriers.scrub_location(""), "")
+
+    def test_spx_cross_border(self):
+        payload = {
+            "retcode": 0,
+            "data": {"sls_tracking_info": {"records": [
+                {"tracking_code": "F100", "tracking_name": "Dropoff Done By Cross Border Seller", "buyer_description": "", "display_flag": 1,
+                 "actual_time": 1795443070, "current_location": {"location_name": "浙江,嘉兴市", "full_address": ""},
+                 "next_location": EMPTY, "milestone_code": 2, "milestone_name": "Packed"},
+            ]}},
+        }
+        r = carriers.parse_spx("SPXTH06724370609B", payload)
+        self.assertIsNotNone(r)
+        self.assertEqual(r.location, "Zhejiang, Jiaxing")
+        self.assertEqual(r.events[0].location, "Zhejiang, Jiaxing")
+
+    def test_stored_state_cleaned(self):
+        stored = {"tracking_number": "SPXTH1", "location": "浙江,嘉兴市",
+                  "events": [{"time": "", "event": "Dropoff", "location": "浙江,嘉兴市,秀洲区,高照"}]}
+        r = carriers.TrackResult.from_dict(stored)
+        self.assertEqual(r.location, "Zhejiang, Jiaxing")
+        self.assertEqual(r.events[0].location, "Zhejiang, Jiaxing")
+
+
 class TestRoundTrip(unittest.TestCase):
     def test_dict(self):
         r = carriers.parse_spx("SPXTH06735947878B", SPX_OUT_FOR_DELIVERY)

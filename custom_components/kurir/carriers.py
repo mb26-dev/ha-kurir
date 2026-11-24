@@ -129,6 +129,113 @@ _PROVINCE_IN_ADDRESS = re.compile(r"จังหวัด\s*(\S+)")
 _PERSONAL = re.compile(r"phone|tel\b|โทร|\d{6,}", re.IGNORECASE)
 _CLOCK_ONLY = re.compile(r"^\d{1,2}:\d{2}(:\d{2})?$")
 
+# Cross-border parcels from China carry Chinese place names (SPX: "浙江,嘉兴市").
+_CJK_CHARS = re.compile(r"[㐀-䶿一-鿿豈-﫿　-〿＀-￯]")
+
+# Chinese provinces, municipalities and SARs -> English.
+CHINESE_PROVINCES: dict[str, str] = {
+    "北京": "Beijing",
+    "天津": "Tianjin",
+    "上海": "Shanghai",
+    "重庆": "Chongqing",
+    "河北": "Hebei",
+    "山西": "Shanxi",
+    "内蒙古": "Inner Mongolia",
+    "辽宁": "Liaoning",
+    "吉林": "Jilin",
+    "黑龙江": "Heilongjiang",
+    "江苏": "Jiangsu",
+    "浙江": "Zhejiang",
+    "安徽": "Anhui",
+    "福建": "Fujian",
+    "江西": "Jiangxi",
+    "山东": "Shandong",
+    "河南": "Henan",
+    "湖北": "Hubei",
+    "湖南": "Hunan",
+    "广东": "Guangdong",
+    "广西": "Guangxi",
+    "海南": "Hainan",
+    "四川": "Sichuan",
+    "贵州": "Guizhou",
+    "云南": "Yunnan",
+    "西藏": "Tibet",
+    "陕西": "Shaanxi",
+    "甘肃": "Gansu",
+    "青海": "Qinghai",
+    "宁夏": "Ningxia",
+    "新疆": "Xinjiang",
+    "香港": "Hong Kong",
+    "澳门": "Macau",
+    "台湾": "Taiwan",
+}
+
+# Cities that commonly appear as origin or hub of cross-border parcels -> English.
+CHINESE_CITIES: dict[str, str] = {
+    # Guangdong
+    "深圳": "Shenzhen",
+    "广州": "Guangzhou",
+    "东莞": "Dongguan",
+    "佛山": "Foshan",
+    "中山": "Zhongshan",
+    "珠海": "Zhuhai",
+    "惠州": "Huizhou",
+    "汕头": "Shantou",
+    "揭阳": "Jieyang",
+    "潮州": "Chaozhou",
+    "江门": "Jiangmen",
+    "肇庆": "Zhaoqing",
+    "清远": "Qingyuan",
+    # Zhejiang
+    "杭州": "Hangzhou",
+    "宁波": "Ningbo",
+    "嘉兴": "Jiaxing",
+    "金华": "Jinhua",
+    "义乌": "Yiwu",
+    "温州": "Wenzhou",
+    "台州": "Taizhou",
+    "绍兴": "Shaoxing",
+    "湖州": "Huzhou",
+    "丽水": "Lishui",
+    "衢州": "Quzhou",
+    # Jiangsu
+    "苏州": "Suzhou",
+    "南京": "Nanjing",
+    "无锡": "Wuxi",
+    "常州": "Changzhou",
+    "南通": "Nantong",
+    "昆山": "Kunshan",
+    "扬州": "Yangzhou",
+    "徐州": "Xuzhou",
+    # Fujian
+    "厦门": "Xiamen",
+    "福州": "Fuzhou",
+    "泉州": "Quanzhou",
+    "莆田": "Putian",
+    "漳州": "Zhangzhou",
+    # Shandong
+    "青岛": "Qingdao",
+    "济南": "Jinan",
+    "临沂": "Linyi",
+    "烟台": "Yantai",
+    "潍坊": "Weifang",
+    # Other hubs
+    "保定": "Baoding",
+    "石家庄": "Shijiazhuang",
+    "郑州": "Zhengzhou",
+    "武汉": "Wuhan",
+    "长沙": "Changsha",
+    "成都": "Chengdu",
+    "西安": "Xi'an",
+    "合肥": "Hefei",
+    "南昌": "Nanchang",
+    "南宁": "Nanning",
+    "凭祥": "Pingxiang",
+    "昆明": "Kunming",
+    "沈阳": "Shenyang",
+    "大连": "Dalian",
+}
+
 # Patterns used to recognise tracking numbers in free text.
 _TN_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
     (CARRIER_SPX, re.compile(r"(?<![A-Z0-9])(SPX(?:TH|MY|ID|VN|PH|SG)[0-9A-Z]{8,16})(?![A-Z0-9])")),
@@ -201,6 +308,9 @@ class TrackEvent:
     event: str
     location: str = ""
 
+    def __post_init__(self) -> None:
+        self.location = scrub_location(self.location)
+
 
 @dataclass
 class TrackResult:
@@ -252,9 +362,35 @@ class TrackResult:
 # --------------------------------------------------------------------------
 
 
+def chinese_place(text: str) -> str:
+    """Readable English place for text with Chinese characters.
+
+    "浙江,嘉兴市,秀洲区" -> "Zhejiang, Jiaxing". Unknown places become "China";
+    Latin parts of mixed text are kept ("Shenzhen 深圳" -> "Shenzhen").
+    """
+    province = next((en for zh, en in CHINESE_PROVINCES.items() if zh in text), "")
+    city = next((en for zh, en in CHINESE_CITIES.items() if zh in text), "")
+    parts = [p for p in (province, city) if p]
+    if len(parts) == 2 and parts[0] == parts[1]:
+        parts = parts[:1]
+    if parts:
+        return ", ".join(parts)
+    latin = re.sub(r"\s*[,;/]\s*", ", ", _CJK_CHARS.sub(" ", text))
+    latin = re.sub(r"\s+", " ", latin).strip(" ,-")
+    return latin if re.search(r"[A-Za-z]{2,}", latin) else "China"
+
+
 def scrub_location(text: str) -> str:
-    """Drop places that carry personal data (a driver's phone number)."""
-    return "" if text and _PERSONAL.search(text) else (text or "")
+    """Drop places that carry personal data (a driver's phone number); translate Chinese places."""
+    if not text or _PERSONAL.search(text):
+        return ""
+    if _CJK_CHARS.search(text):
+        body = text.strip()
+        prefix = ""
+        if body.startswith("→"):
+            prefix, body = "→ ", body[1:].strip()
+        return f"{prefix}{chinese_place(body)}"
+    return text
 
 
 def scrub_event(text: str) -> str:
