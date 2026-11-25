@@ -2,7 +2,7 @@
  * Kurir card - parcel tracking card for the Kurir integration.
  * type: custom:kurir-card
  */
-const KURIR_CARD_VERSION = "0.1.8";
+const KURIR_CARD_VERSION = "0.1.9";
 
 // UI texts and courier event names per language. English is the source; the
 // events are the English names produced by the integration (carriers.py).

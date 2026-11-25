@@ -262,7 +262,7 @@ def _spx_fallback_name(raw: str) -> str:
     low = raw.lower()
     if low.startswith("dropoff done") or "sender has shipped" in low:
         return "Handed to courier by seller"
-    if "pickup done" in low or "picked up" in low:
+    if low.startswith("pickup") or "picked up" in low:
         return "Picked up by courier"
     if low.startswith("arrived") or "inbound" in low:
         return "Arrived at hub"

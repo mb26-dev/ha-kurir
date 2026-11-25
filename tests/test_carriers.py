@@ -230,6 +230,10 @@ class TestSpxDropoff(unittest.TestCase):
         r = carriers.parse_spx("SPXTH1", self._one("F097", "Dropoff Done By Someone"))
         self.assertEqual(r.event, "Handed to courier by seller")
 
+    def test_unknown_pickup_code(self):
+        r = carriers.parse_spx("SPXTH1", self._one("F099", "Pickup From Domestic Seller"))
+        self.assertEqual(r.event, "Picked up by courier")
+
     def test_unknown_other_code_keeps_text(self):
         r = carriers.parse_spx("SPXTH1", self._one("F777", "Something New"))
         self.assertEqual(r.event, "Something New")
