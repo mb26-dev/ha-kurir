@@ -1,0 +1,130 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Kurir ติดตามพัสดุ",
+        "description": "เลือกประเทศของคุณ Flash Express และ Shopee Express (SPX) ใช้งานได้โดยไม่ต้องมีบัญชี คีย์ eTrackings แบบฟรี (ไม่บังคับ) จะเพิ่ม J&T, Kerry, ไปรษณีย์ไทย และอื่น ๆ และใช้เป็นทางสำรองเมื่อ Flash Express บล็อกคำขออัตโนมัติ",
+        "data": {
+          "country": "ประเทศ",
+          "etrackings_api_key": "API key ของ eTrackings (ไม่บังคับ)",
+          "etrackings_key_secret": "Key secret ของ eTrackings (ไม่บังคับ)"
+        }
+      },
+      "reconfigure": {
+        "title": "Kurir ติดตามพัสดุ",
+        "data": {
+          "country": "ประเทศ",
+          "etrackings_api_key": "API key ของ eTrackings (ไม่บังคับ)",
+          "etrackings_key_secret": "Key secret ของ eTrackings (ไม่บังคับ)"
+        }
+      }
+    },
+    "error": {
+      "etrackings_incomplete": "กรอกทั้ง API key และ key secret ของ eTrackings หรือเว้นว่างทั้งคู่"
+    },
+    "abort": {
+      "single_instance_allowed": "ตั้งค่า Kurir ไว้แล้ว",
+      "reconfigure_successful": "ตั้งค่า Kurir ใหม่เรียบร้อยแล้ว"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "ตัวเลือก Kurir",
+        "data": {
+          "etrackings_api_key": "API key ของ eTrackings (ไม่บังคับ)",
+          "etrackings_key_secret": "Key secret ของ eTrackings (ไม่บังคับ)",
+          "scan_interval": "ช่วงเวลาอัปเดต",
+          "keep_delivered_days": "เก็บพัสดุที่จัดส่งแล้วไว้ (วัน, 0 = เก็บจนกว่าจะลบ)",
+          "etrackings_monthly_limit": "จำนวนคำขอ eTrackings สูงสุดต่อรอบโควตา",
+          "etrackings_reset_day": "วันที่ของเดือนที่โควตา eTrackings รีเซ็ต"
+        },
+        "data_description": {
+          "etrackings_monthly_limit": "Kurir จะหยุดใช้ eTrackings เมื่อถึงจำนวนนี้ ตั้งให้ต่ำกว่าแพ็กเกจเล็กน้อย (แพ็กเกจฟรี: 50) หากใช้คีย์นี้ที่อื่นด้วย",
+          "etrackings_reset_day": "eTrackings รีเซ็ตโควตาในวันที่สร้างบัญชี ไม่ใช่วันที่ 1 ดูวันที่รีเซ็ตได้บน etrackings.com ข้างการใช้งานของคุณ"
+        },
+        "description": "คีย์ eTrackings แบบฟรี (ไม่บังคับ) (etrackings.com → Settings → API Keys): เพิ่ม J&T, Kerry, ไปรษณีย์ไทย และอื่น ๆ และเป็นทางสำรองเมื่อ Flash Express บล็อกคำขออัตโนมัติ"
+      }
+    },
+    "error": {
+      "etrackings_incomplete": "กรอกทั้ง API key และ key secret ของ eTrackings หรือเว้นว่างทั้งคู่"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "parcels": {
+        "name": "พัสดุระหว่างทาง"
+      },
+      "parcel": {
+        "state": {
+          "pending": "รอดำเนินการ",
+          "packed": "แพ็กแล้ว",
+          "in_transit": "ระหว่างขนส่ง",
+          "out_for_delivery": "กำลังนำส่ง",
+          "failed_attempt": "นำส่งไม่สำเร็จ",
+          "delivered": "จัดส่งสำเร็จ",
+          "returned": "ตีกลับ",
+          "unknown": "ไม่ทราบ"
+        }
+      }
+    }
+  },
+  "services": {
+    "add_parcel": {
+      "name": "เพิ่มพัสดุ",
+      "description": "เริ่มติดตามพัสดุ",
+      "fields": {
+        "tracking_number": {
+          "name": "หมายเลขพัสดุ",
+          "description": "หมายเลขพัสดุของขนส่ง เช่น SPXTH... หรือ TH...."
+        },
+        "name": {
+          "name": "ชื่อ",
+          "description": "ของในพัสดุ แสดงบนการ์ด"
+        },
+        "carrier": {
+          "name": "ขนส่ง",
+          "description": "ระบุเฉพาะเมื่อ Kurir ไม่สามารถระบุขนส่งจากหมายเลขได้"
+        }
+      }
+    },
+    "add_from_text": {
+      "name": "เพิ่มพัสดุจากข้อความ",
+      "description": "ค้นหาหมายเลขพัสดุในข้อความใดก็ได้ (อีเมล, การแจ้งเตือน) แล้วเริ่มติดตาม",
+      "fields": {
+        "text": {
+          "name": "ข้อความ",
+          "description": "ข้อความที่มีหมายเลขพัสดุอย่างน้อยหนึ่งหมายเลข"
+        },
+        "name": {
+          "name": "ชื่อ",
+          "description": "ชื่อสำหรับพัสดุที่พบ"
+        }
+      }
+    },
+    "remove_parcel": {
+      "name": "ลบพัสดุ",
+      "description": "หยุดติดตามพัสดุ",
+      "fields": {
+        "tracking_number": {
+          "name": "หมายเลขพัสดุ",
+          "description": "หมายเลขพัสดุที่ต้องการลบ"
+        }
+      }
+    },
+    "refresh": {
+      "name": "รีเฟรช",
+      "description": "สอบถามขนส่งตอนนี้"
+    },
+    "set_etrackings_usage": {
+      "name": "ตั้งค่าการใช้งาน eTrackings",
+      "description": "ตั้งจำนวนคำขอ eTrackings ที่ใช้ไปแล้วในรอบโควตาปัจจุบัน เช่น จากเครื่องมืออื่นที่ใช้คีย์เดียวกัน ค่านี้จะรีเซ็ตอัตโนมัติเมื่อโควตารีเซ็ต",
+      "fields": {
+        "used": {
+          "name": "คำขอที่ใช้ไป",
+          "description": "จำนวนคำขอที่ใช้ไปแล้วในรอบโควตานี้ ตามที่แสดงบน etrackings.com"
+        }
+      }
+    }
+  }
+}

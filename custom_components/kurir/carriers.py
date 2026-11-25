@@ -257,8 +257,25 @@ FLASH_ACTIONS: dict[str, str] = {
     "CONTINUE_TRANSPORT": "Back in transit",
 }
 
+def _spx_fallback_name(raw: str) -> str:
+    """Readable name for SPX codes not in SPX_EVENTS."""
+    low = raw.lower()
+    if low.startswith("dropoff done") or "sender has shipped" in low:
+        return "Handed to courier by seller"
+    if "pickup done" in low or "picked up" in low:
+        return "Picked up by courier"
+    if low.startswith("arrived") or "inbound" in low:
+        return "Arrived at hub"
+    if low.startswith("depart") or "outbound" in low:
+        return "Departed hub"
+    return raw or "In transit"
+
+
 SPX_EVENTS: dict[str, str] = {
     "F000": "Label created, waiting for pickup",
+    "F096": "Handed to courier by seller",
+    "F098": "Handed to courier by seller",
+    "F100": "Handed to courier by seller",
     "F200": "Arrived at origin warehouse",
     "F299": "Departed origin warehouse",
     "F300": "Handed to air forwarder",
@@ -503,7 +520,7 @@ def parse_spx(tracking_number: str, payload: dict[str, Any]) -> TrackResult | No
         elif "returned to" in low or "return to sender" in low or "returning to seller" in low:
             name = "Returned to sender"
         else:
-            name = SPX_EVENTS.get(code) or (record.get("tracking_name") or "In transit")
+            name = SPX_EVENTS.get(code) or _spx_fallback_name(record.get("tracking_name") or "")
         stamp = int(record.get("actual_time") or 0)
         when = datetime.fromtimestamp(stamp, tz=UTC).isoformat() if stamp else ""
         events.append(TrackEvent(time=when, event=name, location=_spx_location(record)))

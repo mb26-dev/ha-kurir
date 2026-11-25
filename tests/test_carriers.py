@@ -215,6 +215,26 @@ class TestChinesePlaces(unittest.TestCase):
         self.assertEqual(r.events[0].location, "Zhejiang, Jiaxing")
 
 
+class TestSpxDropoff(unittest.TestCase):
+    def _one(self, code, name):
+        return {"retcode": 0, "data": {"sls_tracking_info": {"records": [
+            {"tracking_code": code, "tracking_name": name, "buyer_description": "", "display_flag": 1,
+             "actual_time": 1795443070, "current_location": EMPTY, "next_location": EMPTY,
+             "milestone_code": 5, "milestone_name": "In transit"}]}}}
+
+    def test_domestic_dropoff(self):
+        r = carriers.parse_spx("SPXTH1", self._one("F098", "Dropoff Done By Domestic Seller"))
+        self.assertEqual(r.event, "Handed to courier by seller")
+
+    def test_unknown_dropoff_code(self):
+        r = carriers.parse_spx("SPXTH1", self._one("F097", "Dropoff Done By Someone"))
+        self.assertEqual(r.event, "Handed to courier by seller")
+
+    def test_unknown_other_code_keeps_text(self):
+        r = carriers.parse_spx("SPXTH1", self._one("F777", "Something New"))
+        self.assertEqual(r.event, "Something New")
+
+
 class TestRoundTrip(unittest.TestCase):
     def test_dict(self):
         r = carriers.parse_spx("SPXTH06735947878B", SPX_OUT_FOR_DELIVERY)

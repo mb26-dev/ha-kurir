@@ -24,6 +24,7 @@ Shopping on Lazada or Shopee means your parcel travels with Flash Express, Shope
 - **No account needed** for Flash Express and Shopee Express. They are queried through their public tracking pages, at most once per update interval (default: hourly).
 - **Optional eTrackings key** (free plan: 50 requests/month) adds J&T, Kerry, Thailand Post, DHL eCommerce, Ninja Van, Best Express and is used as a fallback when Flash Express blocks automated requests. Kurir keeps a budget per quota period so the free plan is never exceeded, and spreads it evenly over the days left (parcels that waited longest are asked first), so the quota is not gone after one day of Flash blocking.
 - **Lovelace card included** – `custom:kurir-card`, phone friendly, follows your theme.
+- **Speaks your language** – setup, options, states, the card and the courier events are translated into English, Thai, Vietnamese, Indonesian, Malay, Simplified Chinese and German, following your Home Assistant language.
 - Delivered parcels are removed automatically after a few days (configurable).
 
 ## Screenshots
@@ -207,6 +208,20 @@ show_delivered: true
 show_history: true
 max_items: 20
 ```
+
+## Languages
+
+| Language | Setup & options | Card & courier events |
+|---|---|---|
+| 🇬🇧 English | ✓ | ✓ |
+| 🇹🇭 ไทย (Thai) | ✓ | ✓ |
+| 🇻🇳 Tiếng Việt (Vietnamese) | ✓ | ✓ |
+| 🇮🇩 Bahasa Indonesia | ✓ | ✓ |
+| 🇲🇾 Bahasa Melayu (Malay) | ✓ | ✓ |
+| 🇨🇳 简体中文 (Simplified Chinese) | ✓ | ✓ |
+| 🇩🇪 Deutsch (German) | ✓ | ✓ |
+
+The card follows the language of your Home Assistant profile. Courier events are stored in English (also in the `kurir_parcel_update` event) and only translated for display. Spotted a clumsy translation? Corrections are very welcome as a pull request or issue.
 
 ## Privacy
 

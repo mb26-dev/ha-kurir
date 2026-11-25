@@ -1,0 +1,130 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Kurir theo dõi bưu kiện",
+        "description": "Chọn quốc gia của bạn. Flash Express và Shopee Express (SPX) hoạt động không cần tài khoản. Khóa eTrackings miễn phí (tùy chọn) bổ sung J&T, Kerry, Thailand Post và các hãng khác, đồng thời là phương án dự phòng khi Flash Express chặn truy vấn tự động.",
+        "data": {
+          "country": "Quốc gia",
+          "etrackings_api_key": "Khóa API eTrackings (tùy chọn)",
+          "etrackings_key_secret": "Key secret eTrackings (tùy chọn)"
+        }
+      },
+      "reconfigure": {
+        "title": "Kurir theo dõi bưu kiện",
+        "data": {
+          "country": "Quốc gia",
+          "etrackings_api_key": "Khóa API eTrackings (tùy chọn)",
+          "etrackings_key_secret": "Key secret eTrackings (tùy chọn)"
+        }
+      }
+    },
+    "error": {
+      "etrackings_incomplete": "Nhập cả khóa API và key secret của eTrackings, hoặc để trống cả hai."
+    },
+    "abort": {
+      "single_instance_allowed": "Kurir đã được thiết lập.",
+      "reconfigure_successful": "Kurir đã được cấu hình lại."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Tùy chọn Kurir",
+        "data": {
+          "etrackings_api_key": "Khóa API eTrackings (tùy chọn)",
+          "etrackings_key_secret": "Key secret eTrackings (tùy chọn)",
+          "scan_interval": "Chu kỳ cập nhật",
+          "keep_delivered_days": "Giữ bưu kiện đã giao (ngày, 0 = giữ đến khi xóa)",
+          "etrackings_monthly_limit": "Số truy vấn eTrackings tối đa mỗi kỳ hạn mức",
+          "etrackings_reset_day": "Ngày trong tháng hạn mức eTrackings được làm mới"
+        },
+        "data_description": {
+          "etrackings_monthly_limit": "Kurir ngừng dùng eTrackings khi đạt số này. Hãy đặt thấp hơn gói của bạn một chút (gói miễn phí: 50) nếu bạn dùng khóa ở nơi khác.",
+          "etrackings_reset_day": "eTrackings làm mới hạn mức vào ngày tạo tài khoản, không phải ngày 1. Ngày làm mới hiển thị trên etrackings.com cạnh mức sử dụng của bạn."
+        },
+        "description": "Khóa eTrackings miễn phí (tùy chọn) (etrackings.com → Settings → API Keys): bổ sung J&T, Kerry, Thailand Post và các hãng khác, và là phương án dự phòng khi Flash Express chặn truy vấn tự động."
+      }
+    },
+    "error": {
+      "etrackings_incomplete": "Nhập cả khóa API và key secret của eTrackings, hoặc để trống cả hai."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "parcels": {
+        "name": "Bưu kiện đang giao"
+      },
+      "parcel": {
+        "state": {
+          "pending": "Đang chờ",
+          "packed": "Đã đóng gói",
+          "in_transit": "Đang vận chuyển",
+          "out_for_delivery": "Đang giao hàng",
+          "failed_attempt": "Giao hàng thất bại",
+          "delivered": "Đã giao",
+          "returned": "Đã hoàn trả",
+          "unknown": "Không rõ"
+        }
+      }
+    }
+  },
+  "services": {
+    "add_parcel": {
+      "name": "Thêm bưu kiện",
+      "description": "Bắt đầu theo dõi một bưu kiện.",
+      "fields": {
+        "tracking_number": {
+          "name": "Mã vận đơn",
+          "description": "Mã vận đơn của hãng, ví dụ SPXTH... hoặc TH...."
+        },
+        "name": {
+          "name": "Tên",
+          "description": "Nội dung bưu kiện, hiển thị trên thẻ."
+        },
+        "carrier": {
+          "name": "Hãng vận chuyển",
+          "description": "Chỉ cần khi Kurir không nhận ra hãng từ mã vận đơn."
+        }
+      }
+    },
+    "add_from_text": {
+      "name": "Thêm bưu kiện từ văn bản",
+      "description": "Tìm mã vận đơn trong bất kỳ văn bản nào (e-mail, thông báo đẩy) và theo dõi chúng.",
+      "fields": {
+        "text": {
+          "name": "Văn bản",
+          "description": "Văn bản chứa một hoặc nhiều mã vận đơn."
+        },
+        "name": {
+          "name": "Tên",
+          "description": "Tên cho các bưu kiện tìm được."
+        }
+      }
+    },
+    "remove_parcel": {
+      "name": "Xóa bưu kiện",
+      "description": "Ngừng theo dõi một bưu kiện.",
+      "fields": {
+        "tracking_number": {
+          "name": "Mã vận đơn",
+          "description": "Mã vận đơn cần xóa."
+        }
+      }
+    },
+    "refresh": {
+      "name": "Làm mới",
+      "description": "Truy vấn các hãng vận chuyển ngay."
+    },
+    "set_etrackings_usage": {
+      "name": "Đặt mức sử dụng eTrackings",
+      "description": "Đặt số truy vấn eTrackings đã dùng trong kỳ hạn mức hiện tại, ví dụ bởi công cụ khác dùng cùng khóa. Số này tự đặt lại khi hạn mức được làm mới.",
+      "fields": {
+        "used": {
+          "name": "Số truy vấn đã dùng",
+          "description": "Số truy vấn đã dùng trong kỳ này, như hiển thị trên etrackings.com."
+        }
+      }
+    }
+  }
+}

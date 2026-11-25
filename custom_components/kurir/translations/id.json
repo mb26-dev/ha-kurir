@@ -1,0 +1,130 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Kurir pelacakan paket",
+        "description": "Pilih negara Anda. Flash Express dan Shopee Express (SPX) berfungsi tanpa akun. Kunci eTrackings gratis (opsional) menambahkan J&T, Kerry, Thailand Post, dan lainnya, serta dipakai sebagai cadangan saat Flash Express memblokir permintaan otomatis.",
+        "data": {
+          "country": "Negara",
+          "etrackings_api_key": "Kunci API eTrackings (opsional)",
+          "etrackings_key_secret": "Key secret eTrackings (opsional)"
+        }
+      },
+      "reconfigure": {
+        "title": "Kurir pelacakan paket",
+        "data": {
+          "country": "Negara",
+          "etrackings_api_key": "Kunci API eTrackings (opsional)",
+          "etrackings_key_secret": "Key secret eTrackings (opsional)"
+        }
+      }
+    },
+    "error": {
+      "etrackings_incomplete": "Isi kunci API dan key secret eTrackings, atau kosongkan keduanya."
+    },
+    "abort": {
+      "single_instance_allowed": "Kurir sudah disiapkan.",
+      "reconfigure_successful": "Kurir telah dikonfigurasi ulang."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Opsi Kurir",
+        "data": {
+          "etrackings_api_key": "Kunci API eTrackings (opsional)",
+          "etrackings_key_secret": "Key secret eTrackings (opsional)",
+          "scan_interval": "Interval pembaruan",
+          "keep_delivered_days": "Simpan paket terkirim selama (hari, 0 = simpan sampai dihapus)",
+          "etrackings_monthly_limit": "Maksimum permintaan eTrackings per periode kuota",
+          "etrackings_reset_day": "Tanggal kuota eTrackings Anda diperbarui"
+        },
+        "data_description": {
+          "etrackings_monthly_limit": "Kurir berhenti memakai eTrackings pada angka ini. Atur sedikit di bawah paket Anda (paket gratis: 50) jika kunci juga dipakai di tempat lain.",
+          "etrackings_reset_day": "eTrackings memperbarui kuota pada tanggal akun dibuat, bukan tanggal 1. Tanggal pembaruan tampil di etrackings.com di samping pemakaian Anda."
+        },
+        "description": "Kunci eTrackings gratis (opsional) (etrackings.com → Settings → API Keys): menambahkan J&T, Kerry, Thailand Post, dan lainnya, serta menjadi cadangan saat Flash Express memblokir permintaan otomatis."
+      }
+    },
+    "error": {
+      "etrackings_incomplete": "Isi kunci API dan key secret eTrackings, atau kosongkan keduanya."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "parcels": {
+        "name": "Paket dalam perjalanan"
+      },
+      "parcel": {
+        "state": {
+          "pending": "Menunggu",
+          "packed": "Dikemas",
+          "in_transit": "Dalam perjalanan",
+          "out_for_delivery": "Sedang diantar",
+          "failed_attempt": "Pengantaran gagal",
+          "delivered": "Terkirim",
+          "returned": "Dikembalikan",
+          "unknown": "Tidak diketahui"
+        }
+      }
+    }
+  },
+  "services": {
+    "add_parcel": {
+      "name": "Tambah paket",
+      "description": "Mulai melacak paket.",
+      "fields": {
+        "tracking_number": {
+          "name": "Nomor resi",
+          "description": "Nomor resi kurir, mis. SPXTH... atau TH...."
+        },
+        "name": {
+          "name": "Nama",
+          "description": "Isi paket, ditampilkan di kartu."
+        },
+        "carrier": {
+          "name": "Kurir",
+          "description": "Hanya perlu jika Kurir tidak bisa mengenali kurir dari nomornya."
+        }
+      }
+    },
+    "add_from_text": {
+      "name": "Tambah paket dari teks",
+      "description": "Cari nomor resi di teks apa pun (e-mail, notifikasi push) lalu lacak.",
+      "fields": {
+        "text": {
+          "name": "Teks",
+          "description": "Teks yang berisi satu atau beberapa nomor resi."
+        },
+        "name": {
+          "name": "Nama",
+          "description": "Nama untuk paket yang ditemukan."
+        }
+      }
+    },
+    "remove_parcel": {
+      "name": "Hapus paket",
+      "description": "Berhenti melacak paket.",
+      "fields": {
+        "tracking_number": {
+          "name": "Nomor resi",
+          "description": "Nomor resi yang akan dihapus."
+        }
+      }
+    },
+    "refresh": {
+      "name": "Segarkan",
+      "description": "Tanyakan ke kurir sekarang."
+    },
+    "set_etrackings_usage": {
+      "name": "Atur pemakaian eTrackings",
+      "description": "Atur berapa permintaan eTrackings yang sudah terpakai di periode kuota ini, mis. oleh alat lain dengan kunci yang sama. Angka ini direset otomatis saat kuota diperbarui.",
+      "fields": {
+        "used": {
+          "name": "Permintaan terpakai",
+          "description": "Permintaan yang sudah terpakai di periode ini, seperti tampil di etrackings.com."
+        }
+      }
+    }
+  }
+}

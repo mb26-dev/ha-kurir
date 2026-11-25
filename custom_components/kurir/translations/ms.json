@@ -1,0 +1,130 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Kurir penjejakan bungkusan",
+        "description": "Pilih negara anda. Flash Express dan Shopee Express (SPX) berfungsi tanpa akaun. Kunci eTrackings percuma (pilihan) menambah J&T, Kerry, Thailand Post dan lain-lain, dan digunakan sebagai sandaran apabila Flash Express menyekat permintaan automatik.",
+        "data": {
+          "country": "Negara",
+          "etrackings_api_key": "Kunci API eTrackings (pilihan)",
+          "etrackings_key_secret": "Key secret eTrackings (pilihan)"
+        }
+      },
+      "reconfigure": {
+        "title": "Kurir penjejakan bungkusan",
+        "data": {
+          "country": "Negara",
+          "etrackings_api_key": "Kunci API eTrackings (pilihan)",
+          "etrackings_key_secret": "Key secret eTrackings (pilihan)"
+        }
+      }
+    },
+    "error": {
+      "etrackings_incomplete": "Masukkan kedua-dua kunci API dan key secret eTrackings, atau biarkan kedua-duanya kosong."
+    },
+    "abort": {
+      "single_instance_allowed": "Kurir sudah disediakan.",
+      "reconfigure_successful": "Kurir telah dikonfigurasi semula."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Pilihan Kurir",
+        "data": {
+          "etrackings_api_key": "Kunci API eTrackings (pilihan)",
+          "etrackings_key_secret": "Key secret eTrackings (pilihan)",
+          "scan_interval": "Selang kemas kini",
+          "keep_delivered_days": "Simpan bungkusan yang dihantar selama (hari, 0 = simpan sehingga dibuang)",
+          "etrackings_monthly_limit": "Maksimum permintaan eTrackings setiap tempoh kuota",
+          "etrackings_reset_day": "Hari dalam bulan kuota eTrackings anda diperbaharui"
+        },
+        "data_description": {
+          "etrackings_monthly_limit": "Kurir berhenti menggunakan eTrackings pada jumlah ini. Tetapkan sedikit di bawah pelan anda (pelan percuma: 50) jika kunci turut digunakan di tempat lain.",
+          "etrackings_reset_day": "eTrackings memperbaharui kuota pada hari akaun anda dicipta, bukan pada 1hb. Tarikh pembaharuan dipaparkan di etrackings.com di sebelah penggunaan anda."
+        },
+        "description": "Kunci eTrackings percuma (pilihan) (etrackings.com → Settings → API Keys): menambah J&T, Kerry, Thailand Post dan lain-lain, dan menjadi sandaran apabila Flash Express menyekat permintaan automatik."
+      }
+    },
+    "error": {
+      "etrackings_incomplete": "Masukkan kedua-dua kunci API dan key secret eTrackings, atau biarkan kedua-duanya kosong."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "parcels": {
+        "name": "Bungkusan dalam perjalanan"
+      },
+      "parcel": {
+        "state": {
+          "pending": "Belum selesai",
+          "packed": "Dibungkus",
+          "in_transit": "Dalam transit",
+          "out_for_delivery": "Sedang dihantar",
+          "failed_attempt": "Penghantaran gagal",
+          "delivered": "Dihantar",
+          "returned": "Dikembalikan",
+          "unknown": "Tidak diketahui"
+        }
+      }
+    }
+  },
+  "services": {
+    "add_parcel": {
+      "name": "Tambah bungkusan",
+      "description": "Mula menjejak bungkusan.",
+      "fields": {
+        "tracking_number": {
+          "name": "Nombor penjejakan",
+          "description": "Nombor penjejakan kurier, cth. SPXTH... atau TH...."
+        },
+        "name": {
+          "name": "Nama",
+          "description": "Isi bungkusan, dipaparkan pada kad."
+        },
+        "carrier": {
+          "name": "Kurier",
+          "description": "Hanya diperlukan apabila Kurir tidak dapat mengenal pasti kurier daripada nombor."
+        }
+      }
+    },
+    "add_from_text": {
+      "name": "Tambah bungkusan daripada teks",
+      "description": "Cari nombor penjejakan dalam sebarang teks (e-mel, pemberitahuan tolak) dan jejakinya.",
+      "fields": {
+        "text": {
+          "name": "Teks",
+          "description": "Teks yang mengandungi satu atau lebih nombor penjejakan."
+        },
+        "name": {
+          "name": "Nama",
+          "description": "Nama untuk bungkusan yang ditemui."
+        }
+      }
+    },
+    "remove_parcel": {
+      "name": "Buang bungkusan",
+      "description": "Berhenti menjejak bungkusan.",
+      "fields": {
+        "tracking_number": {
+          "name": "Nombor penjejakan",
+          "description": "Nombor penjejakan untuk dibuang."
+        }
+      }
+    },
+    "refresh": {
+      "name": "Muat semula",
+      "description": "Tanya kurier sekarang."
+    },
+    "set_etrackings_usage": {
+      "name": "Tetapkan penggunaan eTrackings",
+      "description": "Tetapkan berapa banyak permintaan eTrackings sudah digunakan dalam tempoh kuota semasa, cth. oleh alat lain dengan kunci yang sama. Nombor ini ditetapkan semula secara automatik apabila kuota diperbaharui.",
+      "fields": {
+        "used": {
+          "name": "Permintaan digunakan",
+          "description": "Permintaan yang telah digunakan dalam tempoh ini, seperti dipaparkan di etrackings.com."
+        }
+      }
+    }
+  }
+}

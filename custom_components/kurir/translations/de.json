@@ -1,0 +1,130 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Kurir Paketverfolgung",
+        "description": "Wähle dein Land. Flash Express und Shopee Express (SPX) funktionieren ohne Konto. Ein optionaler kostenloser eTrackings-Schlüssel ergänzt J&T, Kerry, Thailand Post und weitere und dient als Ausweichweg, wenn Flash Express automatische Abfragen blockiert.",
+        "data": {
+          "country": "Land",
+          "etrackings_api_key": "eTrackings API-Schlüssel (optional)",
+          "etrackings_key_secret": "eTrackings Schlüssel-Secret (optional)"
+        }
+      },
+      "reconfigure": {
+        "title": "Kurir Paketverfolgung",
+        "data": {
+          "country": "Land",
+          "etrackings_api_key": "eTrackings API-Schlüssel (optional)",
+          "etrackings_key_secret": "eTrackings Schlüssel-Secret (optional)"
+        }
+      }
+    },
+    "error": {
+      "etrackings_incomplete": "Gib den eTrackings API-Schlüssel und das Secret beide ein oder lass beide leer."
+    },
+    "abort": {
+      "single_instance_allowed": "Kurir ist bereits eingerichtet.",
+      "reconfigure_successful": "Kurir wurde neu konfiguriert."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Kurir Optionen",
+        "data": {
+          "etrackings_api_key": "eTrackings API-Schlüssel (optional)",
+          "etrackings_key_secret": "eTrackings Schlüssel-Secret (optional)",
+          "scan_interval": "Aktualisierungsintervall",
+          "keep_delivered_days": "Zugestellte Pakete behalten (Tage, 0 = bis zum Entfernen)",
+          "etrackings_monthly_limit": "Maximale eTrackings-Abfragen pro Kontingentzeitraum",
+          "etrackings_reset_day": "Tag im Monat, an dem dein eTrackings-Kontingent erneuert wird"
+        },
+        "data_description": {
+          "etrackings_monthly_limit": "Bei dieser Zahl nutzt Kurir eTrackings nicht mehr. Bleib etwas unter deinem Tarif (kostenlos: 50), wenn du den Schlüssel auch anderswo nutzt.",
+          "etrackings_reset_day": "eTrackings erneuert das Kontingent am Tag der Kontoerstellung, nicht am 1. Das Datum steht auf etrackings.com neben deinem Verbrauch."
+        },
+        "description": "Optionaler kostenloser eTrackings-Schlüssel (etrackings.com → Settings → API Keys): ergänzt J&T, Kerry, Thailand Post und weitere und ist der Ausweichweg, wenn Flash Express automatische Abfragen blockiert."
+      }
+    },
+    "error": {
+      "etrackings_incomplete": "Gib den eTrackings API-Schlüssel und das Secret beide ein oder lass beide leer."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "parcels": {
+        "name": "Pakete unterwegs"
+      },
+      "parcel": {
+        "state": {
+          "pending": "Ausstehend",
+          "packed": "Verpackt",
+          "in_transit": "Unterwegs",
+          "out_for_delivery": "In Zustellung",
+          "failed_attempt": "Zustellversuch fehlgeschlagen",
+          "delivered": "Zugestellt",
+          "returned": "Zurückgesendet",
+          "unknown": "Unbekannt"
+        }
+      }
+    }
+  },
+  "services": {
+    "add_parcel": {
+      "name": "Paket hinzufügen",
+      "description": "Ein Paket verfolgen.",
+      "fields": {
+        "tracking_number": {
+          "name": "Sendungsnummer",
+          "description": "Die Sendungsnummer des Kuriers, z. B. SPXTH... oder TH...."
+        },
+        "name": {
+          "name": "Name",
+          "description": "Was im Paket ist, wird auf der Karte angezeigt."
+        },
+        "carrier": {
+          "name": "Kurier",
+          "description": "Nur nötig, wenn Kurir den Kurier nicht an der Nummer erkennt."
+        }
+      }
+    },
+    "add_from_text": {
+      "name": "Pakete aus Text hinzufügen",
+      "description": "Sendungsnummern in beliebigem Text finden (E-Mail, Push-Nachricht) und verfolgen.",
+      "fields": {
+        "text": {
+          "name": "Text",
+          "description": "Text mit einer oder mehreren Sendungsnummern."
+        },
+        "name": {
+          "name": "Name",
+          "description": "Name für die gefundenen Pakete."
+        }
+      }
+    },
+    "remove_parcel": {
+      "name": "Paket entfernen",
+      "description": "Ein Paket nicht mehr verfolgen.",
+      "fields": {
+        "tracking_number": {
+          "name": "Sendungsnummer",
+          "description": "Die zu entfernende Sendungsnummer."
+        }
+      }
+    },
+    "refresh": {
+      "name": "Aktualisieren",
+      "description": "Die Kuriere jetzt abfragen."
+    },
+    "set_etrackings_usage": {
+      "name": "eTrackings-Verbrauch setzen",
+      "description": "Setzt, wie viele eTrackings-Abfragen im aktuellen Kontingentzeitraum schon verbraucht sind, z. B. durch ein anderes Tool mit demselben Schlüssel. Der Wert wird bei der Erneuerung automatisch zurückgesetzt.",
+      "fields": {
+        "used": {
+          "name": "Verbrauchte Abfragen",
+          "description": "Bisher verbrauchte Abfragen in diesem Zeitraum, wie auf etrackings.com angezeigt."
+        }
+      }
+    }
+  }
+}

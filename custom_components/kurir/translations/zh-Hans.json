@@ -1,0 +1,130 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Kurir 包裹追踪",
+        "description": "选择你的国家。Flash Express 和 Shopee Express (SPX) 无需账户即可使用。可选的免费 eTrackings 密钥可增加 J&T、Kerry、泰国邮政等快递，并在 Flash Express 拦截自动查询时作为备用。",
+        "data": {
+          "country": "国家",
+          "etrackings_api_key": "eTrackings API 密钥（可选）",
+          "etrackings_key_secret": "eTrackings 密钥 Secret（可选）"
+        }
+      },
+      "reconfigure": {
+        "title": "Kurir 包裹追踪",
+        "data": {
+          "country": "国家",
+          "etrackings_api_key": "eTrackings API 密钥（可选）",
+          "etrackings_key_secret": "eTrackings 密钥 Secret（可选）"
+        }
+      }
+    },
+    "error": {
+      "etrackings_incomplete": "请同时填写 eTrackings API 密钥和 Secret，或两者都留空。"
+    },
+    "abort": {
+      "single_instance_allowed": "Kurir 已设置。",
+      "reconfigure_successful": "Kurir 已重新配置。"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Kurir 选项",
+        "data": {
+          "etrackings_api_key": "eTrackings API 密钥（可选）",
+          "etrackings_key_secret": "eTrackings 密钥 Secret（可选）",
+          "scan_interval": "更新间隔",
+          "keep_delivered_days": "已签收包裹保留天数（0 = 保留至手动删除）",
+          "etrackings_monthly_limit": "每个配额周期的 eTrackings 最大查询次数",
+          "etrackings_reset_day": "eTrackings 配额每月重置日"
+        },
+        "data_description": {
+          "etrackings_monthly_limit": "达到此数值后 Kurir 将停止使用 eTrackings。如果密钥也在其他地方使用，请设置得略低于你的套餐（免费套餐：50）。",
+          "etrackings_reset_day": "eTrackings 在账户创建日重置配额，而不是每月 1 日。重置日期显示在 etrackings.com 的用量旁边。"
+        },
+        "description": "可选的免费 eTrackings 密钥（etrackings.com → Settings → API Keys）：增加 J&T、Kerry、泰国邮政等快递，并在 Flash Express 拦截自动查询时作为备用。"
+      }
+    },
+    "error": {
+      "etrackings_incomplete": "请同时填写 eTrackings API 密钥和 Secret，或两者都留空。"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "parcels": {
+        "name": "运输中的包裹"
+      },
+      "parcel": {
+        "state": {
+          "pending": "待处理",
+          "packed": "已打包",
+          "in_transit": "运输中",
+          "out_for_delivery": "派送中",
+          "failed_attempt": "派送失败",
+          "delivered": "已签收",
+          "returned": "已退回",
+          "unknown": "未知"
+        }
+      }
+    }
+  },
+  "services": {
+    "add_parcel": {
+      "name": "添加包裹",
+      "description": "开始追踪包裹。",
+      "fields": {
+        "tracking_number": {
+          "name": "运单号",
+          "description": "快递运单号，例如 SPXTH... 或 TH...."
+        },
+        "name": {
+          "name": "名称",
+          "description": "包裹内容，显示在卡片上。"
+        },
+        "carrier": {
+          "name": "快递公司",
+          "description": "仅当 Kurir 无法从运单号识别快递公司时需要。"
+        }
+      }
+    },
+    "add_from_text": {
+      "name": "从文本添加包裹",
+      "description": "在任意文本（电子邮件、推送通知）中查找运单号并开始追踪。",
+      "fields": {
+        "text": {
+          "name": "文本",
+          "description": "包含一个或多个运单号的文本。"
+        },
+        "name": {
+          "name": "名称",
+          "description": "找到的包裹的名称。"
+        }
+      }
+    },
+    "remove_parcel": {
+      "name": "删除包裹",
+      "description": "停止追踪包裹。",
+      "fields": {
+        "tracking_number": {
+          "name": "运单号",
+          "description": "要删除的运单号。"
+        }
+      }
+    },
+    "refresh": {
+      "name": "刷新",
+      "description": "立即查询快递公司。"
+    },
+    "set_etrackings_usage": {
+      "name": "设置 eTrackings 用量",
+      "description": "设置当前配额周期内已使用的 eTrackings 查询次数，例如被使用同一密钥的其他工具消耗的次数。配额重置时会自动归零。",
+      "fields": {
+        "used": {
+          "name": "已用查询次数",
+          "description": "本周期内已使用的查询次数，以 etrackings.com 显示为准。"
+        }
+      }
+    }
+  }
+}
