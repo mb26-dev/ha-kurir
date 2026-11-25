@@ -1,8 +1,7 @@
 <p align="center">
-  <img src="images/image.jpg" alt="Kurir" width="320">
+  <img src="images/banner.jpg" alt="Kurir – Parcel Tracker" width="100%">
 </p>
 
-<h1 align="center">Kurir</h1>
 <p align="center"><b>Last-mile parcel tracking for Southeast Asia in Home Assistant</b><br>
 Flash Express · Shopee Express (SPX) · more couriers through eTrackings</p>
 
