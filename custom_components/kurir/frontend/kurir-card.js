@@ -2,7 +2,7 @@
  * Kurir card - parcel tracking card for the Kurir integration.
  * type: custom:kurir-card
  */
-const KURIR_CARD_VERSION = "0.1.9";
+const KURIR_CARD_VERSION = "0.1.10";
 
 // UI texts and courier event names per language. English is the source; the
 // events are the English names produced by the integration (carriers.py).
@@ -347,7 +347,10 @@ class KurirCard extends HTMLElement {
     let rows = (st.attributes.parcels || []).slice();
     if (!cfg.show_delivered) rows = rows.filter((r) => r.status !== "delivered");
     rows = rows.slice(0, cfg.max_items);
-    const counts = st.attributes.counts || {};
+    // counts are forced to whole numbers (they go into the markup)
+    const rawCounts = st.attributes.counts || {};
+    const counts = {};
+    for (const k of Object.keys(rawCounts)) { const n = parseInt(rawCounts[k], 10); counts[k] = Number.isFinite(n) && n > 0 ? n : 0; }
     const onWay = (counts.in_transit || 0) + (counts.failed_attempt || 0);
     const tiles = [
       ["mdi:package-variant-closed", (counts.pending || 0) + (counts.packed || 0), T.tiles[0], KURIR_LOOK.packed.c],
