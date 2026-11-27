@@ -8,7 +8,7 @@ Flash Express · Shopee Express (SPX) · more couriers through eTrackings</p>
 <p align="center">
   <a href="https://github.com/hacs/integration"><img src="https://img.shields.io/badge/HACS-Default-41BDF5.svg" alt="HACS Default"></a>
   <img src="https://img.shields.io/badge/Home%20Assistant-2025.4%2B-03a9f4" alt="Home Assistant 2025.4+">
-  <a href="https://github.com/mb26-dev/ha-kurir/releases"><img src="https://img.shields.io/badge/release-v0.1.10-blue" alt="Release v0.1.10"></a>
+  <a href="https://github.com/mb26-dev/ha-kurir/releases"><img src=".github/badge-release.svg" alt="Release v0.1.10"></a>
   <a href="https://ko-fi.com/mb26dev"><img src="https://img.shields.io/badge/Ko--fi-Buy%20me%20a%20coffee-FF5E5B?logo=ko-fi&logoColor=white" alt="Buy me a coffee on Ko-fi"></a>
 </p>
 
